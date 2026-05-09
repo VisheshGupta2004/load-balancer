@@ -485,7 +485,7 @@ Logs show:
 The load balancer is deployed on Render:
 
 ```text
-https://your-render-url.onrender.com
+https://load-balancer-ux3k.onrender.com/
 ```
 
 ---
@@ -513,6 +513,7 @@ for production deployment configuration.
 ```bash
 gunicorn main:app --workers 2 --bind 0.0.0.0:5000
 ```
+
 ---
 
 ## Algorithm: How Rendezvous Hashing Works
