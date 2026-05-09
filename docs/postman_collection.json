@@ -1,0 +1,128 @@
+{
+  "info": {
+    "name": "Rendezvous Load Balancer",
+    "description": "Complete API demo collection for the Load Balancer internship task.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1 — Welcome / API Index",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/",
+        "description": "Returns all available endpoints."
+      }
+    },
+    {
+      "name": "2 — Route a specific IP",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/route",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {"mode": "raw", "raw": "{\"ip\": \"192.168.1.42\"}"},
+        "description": "Routes a specific IP. Run twice — same IP must hit same node (determinism test)."
+      }
+    },
+    {
+      "name": "3 — Route same IP again (determinism check)",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/route",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {"mode": "raw", "raw": "{\"ip\": \"192.168.1.42\"}"},
+        "description": "Must return the same node as request #2."
+      }
+    },
+    {
+      "name": "4 — Route random IP (no body)",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/route",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {"mode": "raw", "raw": "{}"},
+        "description": "No IP provided — server generates a random one."
+      }
+    },
+    {
+      "name": "5 — Simulate 20 requests",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/simulate",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {"mode": "raw", "raw": "{\"count\": 20}"},
+        "description": "Simulates 20 random IPs and routes each."
+      }
+    },
+    {
+      "name": "6 — View metrics dashboard",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/metrics",
+        "description": "Shows request count and % per node, plus last 10 requests."
+      }
+    },
+    {
+      "name": "7 — Take Node-A offline (health check)",
+      "request": {
+        "method": "PATCH",
+        "url": "{{base_url}}/health/Node-A",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {"mode": "raw", "raw": "{\"healthy\": false}"},
+        "description": "Marks Node-A as unhealthy. Subsequent routes will avoid it."
+      }
+    },
+    {
+      "name": "8 — Route again (Node-A should be skipped)",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/route",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {"mode": "raw", "raw": "{\"ip\": \"10.10.10.10\"}"},
+        "description": "Node-A is offline — should route to Node-B or Node-C only."
+      }
+    },
+    {
+      "name": "9 — Bring Node-A back online",
+      "request": {
+        "method": "PATCH",
+        "url": "{{base_url}}/health/Node-A",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {"mode": "raw", "raw": "{\"healthy\": true}"},
+        "description": "Restores Node-A to healthy state."
+      }
+    },
+    {
+      "name": "10 — Trigger rate limit",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/route",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {"mode": "raw", "raw": "{\"ip\": \"99.99.99.99\"}"},
+        "description": "Send this 6+ times quickly to trigger the rate limiter (max 5/min)."
+      }
+    },
+    {
+      "name": "11 — List all nodes",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/nodes",
+        "description": "Returns all nodes with name, weight, and health."
+      }
+    },
+    {
+      "name": "12 — Reset metrics",
+      "request": {
+        "method": "DELETE",
+        "url": "{{base_url}}/metrics/reset",
+        "description": "Clears all in-memory metrics."
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:5000",
+      "description": "Change to your deployment URL for cloud testing."
+    }
+  ]
+}
